@@ -6,7 +6,13 @@ class TransactionProvider extends ChangeNotifier {
   List<Transactions> _transactions = [];
   final TransactionDB _db = TransactionDB(dbName: 'transactions.db');
 
-  List<Transactions> get transactions => _transactions;
+  List<Transactions> getTransaction() {
+    return _transactions;
+  }
+
+  List<Transactions> getTransactionByEra(String era) {
+    return _transactions.where((transaction) => transaction.era == era).toList();
+  }
 
   Future<void> initData() async {
     _transactions = await _db.loadAllData();
@@ -26,9 +32,5 @@ class TransactionProvider extends ChangeNotifier {
   Future<void> updateTransaction(Transactions transaction) async {
     await _db.updateDatabase(transaction);
     await initData();
-  }
-
-  List<Transactions> getTransactionsByEra(String era) {
-    return _transactions.where((transaction) => transaction.era == era).toList();
   }
 }

@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/transaction_provider.dart';
-import '../models/transactions.dart';
-import 'edit_screen.dart';
 import 'detail_screen.dart';
+import 'edit_screen.dart';
+import '../models/transactions.dart';
 
 class HomeScreen extends StatelessWidget {
-  final String? era; // เพิ่ม parameter สำหรับการเลือกยุค
+  final String? era;
 
-  const HomeScreen({super.key, this.era});
+  const HomeScreen({Key? key, this.era}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final transactionProvider = Provider.of<TransactionProvider>(context);
-    List<Transactions> transactions = era == null
-        ? transactionProvider.transactions
-        : transactionProvider.getTransactionsByEra(era!); // ใช้ฟังก์ชันเพื่อกรองตามยุค
+    final transactions = era == null
+        ? Provider.of<TransactionProvider>(context).getTransaction()
+        : Provider.of<TransactionProvider>(context).getTransactionByEra(era!);
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -41,14 +40,17 @@ class HomeScreen extends StatelessWidget {
             },
             child: Card(
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
+                borderRadius: BorderRadius.circular(12.0),
               ),
+              elevation: 4,
+              color: Colors.brown[100], // สีพื้นหลังของการ์ด
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(8.0),
+                        borderRadius: BorderRadius.circular(12.0),
                         image: DecorationImage(
                           image: NetworkImage(transaction.imageUrl),
                           fit: BoxFit.cover,
@@ -59,23 +61,25 @@ class HomeScreen extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           transaction.title,
-                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.brown),
                           textAlign: TextAlign.center,
                         ),
+                        const SizedBox(height: 4),
                         Text(
                           'ยุค: ${transaction.era}',
-                          style: const TextStyle(fontSize: 15, color: Colors.grey),
+                          style: const TextStyle(fontSize: 16, color: Colors.grey),
                           textAlign: TextAlign.center,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.edit),
+                              icon: const Icon(Icons.edit, size: 20, color: Colors.brown),
                               onPressed: () {
                                 Navigator.push(
                                   context,
@@ -86,7 +90,7 @@ class HomeScreen extends StatelessWidget {
                               },
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete),
+                              icon: const Icon(Icons.delete, size: 20, color: Colors.brown),
                               onPressed: () {
                                 _showDeleteConfirmationDialog(context, transaction);
                               },
@@ -111,20 +115,21 @@ class HomeScreen extends StatelessWidget {
       builder: (context) {
         return AlertDialog(
           title: const Text('ยืนยันการลบ'),
-          content: Text('คุณแน่ใจหรือว่าต้องการลบ "${transaction.title}"'),
+          content: const Text('คุณแน่ใจหรือว่าต้องการลบข้อมูลนี้?'),
           actions: [
             TextButton(
-              child: const Text('ยกเลิก'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // ปิด Dialog
               },
+              child: const Text('ยกเลิก'),
             ),
             TextButton(
-              child: const Text('ลบ'),
               onPressed: () {
-                Provider.of<TransactionProvider>(context, listen: false).deleteTransaction(transaction.keyID);
-                Navigator.of(context).pop();
+                final provider = Provider.of<TransactionProvider>(context, listen: false);
+                provider.deleteTransaction(transaction.keyID);
+                Navigator.of(context).pop(); // ปิด Dialog
               },
+              child: const Text('ลบ'),
             ),
           ],
         );

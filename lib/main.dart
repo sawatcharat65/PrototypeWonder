@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
       length: 4,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('สถานที่'),
+          title: const Text('WonderS'),
           bottom: const TabBar(
             tabs: [
               Tab(text: "ทั้งหมด"),
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: TabBarView(
           children: [
             HomeScreen(),
-            HomeScreen(era: 'โบราณ'), // ส่งค่าที่เลือกให้ HomeScreen
+            HomeScreen(era: 'โบราณ'),
             HomeScreen(era: 'ยุคกลาง'),
             HomeScreen(era: 'ยุคใหม่'),
           ],
